@@ -1,0 +1,76 @@
+<div style="margin-top: 20px; margin-left: 10px">  
+  <h2>Annealer</h2>
+  <hr>
+  <div>
+    <p>Scheduled to open at <b id="annealerOpenTime">{{annealer_open_time}}am</b></p>
+    <p>Scheduled to close at <b id="annealerCloseTime">{{annealer_close_time}}am</b></p>
+  </div>
+  <button type="button" data-toggle="modal" data-target="#annealerModal" style="margin-left: 20px;" class="btn btn-outline-primary btn-sm">Change</button>
+  <hr>
+  <h2><span id="status" class="badge badge-primary">Status: {{status}}</span></h2>
+  <button class="btn btn-primary" onClick="forward()">Open</button>
+  <button class="btn btn-primary" onClick="backward()">Close</button>
+  <button class="btn btn-danger" onClick="stop()">Stop</button>
+</div>
+
+<div class="modal fade" id="annealerModal" tabindex="-1" role="dialog" aria-labelledby="annealerModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+	<h5 class="modal-title" id="annealerModalLabel">Annealer Schedule</h5>
+	<button type="button" class="close" data-dismiss="modal" aria-label="close">
+	  <span aria-hidden="true">&times;</span>
+	</button>
+      </div>
+      <div class="modal-body">
+	<label>Time to open</label>
+	<input type="time" class="form-control" id="openTime" name="openTime" value="{{annealer_open_time}}">
+        <label>Time to close</label>
+        <input type="time" class="form-control" id="closeTime" name="closeTime" value="{{annealer_close_time}}">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+	<button type="button" class="btn btn-primary" onClick="saveAnnealerSchedule()">Save Changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+
+  function saveAnnealerSchedule() {
+    jQuery.get("/annealer/schedule", {openTime: $('#openTime').val(), closeTime: $('#closeTime').val()}, function(data) {
+      $('#annealerOpenTime').html($('#openTime').val() + "am");
+      $('#annealerCloseTime').html($('#closeTime').val() + "am");
+      $('#annealerModal').modal('hide');
+    });
+  }
+
+  function forward() {
+    var xhttp = new XMLHttpRequest();
+    xhttp.open("GET", "/forward", true);
+    xhttp.send();
+    checkStatus();
+  }
+  function backward() {
+    var xhttp = new XMLHttpRequest();
+    xhttp.open("GET", "/backward", true);
+    xhttp.send();
+    checkStatus();
+  }
+  function stop() {
+    var xhttp = new XMLHttpRequest();
+    xhttp.open("GET", "/stop", true);
+    xhttp.send();
+    checkStatus();
+  }
+  function checkStatus() {
+    var xhttp = new XMLHttpRequest();
+    xhttp.open("GET", "/status", false);
+    xhttp.send();
+    document.getElementById('status').innerHTML = "Status: " + xhttp.responseText;
+  }
+  window.setInterval(function() {
+    checkStatus();
+  }, 2000);
+</script>

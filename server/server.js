@@ -23,8 +23,8 @@ var annealerScheduleClose = {hours: "11", minutes: "00"}
 app.set('view engine', 'hbs');
 app.set('views', __dirname + "/views");
 
-if(fs.existsSync("annealerSchedule.json")) {
-  annealerSchedule = require("./annealerSchedule.json");
+if(fs.existsSync("config/schedule.json")) {
+  annealerSchedule = require("./config/schedule.json");
   setAnnealerSchedule(annealerSchedule.openHours, annealerSchedule.openMinutes, annealerSchedule.closeHours, annealerSchedule.closeMinutes);
   console.log("Loaded annealer schedule from disk");
 }
